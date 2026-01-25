@@ -40,7 +40,7 @@ The application follows a reactive layered architecture:
 
 ```mermaid
 graph LR
-    Client -->|HTTP/Stream| Security[Security Layer<br>(OAuth2/JWT)]
+    Client -->|HTTP/Stream| Security["Security Layer<br>(OAuth2/JWT)"]
     Security --> Controller[Reactive Controller]
     Controller -->|Flux/Mono| Repository[R2DBC Repository]
     Repository -->|Non-blocking SQL| DB[(H2 Database)]
