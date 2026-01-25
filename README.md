@@ -1,83 +1,132 @@
-# CRUD Réactif avec Backpressure - crudreativeBackpressure
+# 🚀 Reactive CRUD with Backpressure
 
-Ce projet est une application CRUD (Create, Read, Update, Delete) entièrement réactive construite avec Spring Boot, Spring WebFlux et R2DBC. Elle démontre comment gérer des opérations de base de données de manière non bloquante et comment appliquer une stratégie de backpressure pour le streaming de données.
+> A High-Performance, Non-Blocking REST API built with Spring WebFlux, R2DBC, and OAuth2 Security.
 
-## Fonctionnalités
+![Java](https://img.shields.io/badge/Java-17-orange.svg)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-Reactive-green.svg)
+![R2DBC](https://img.shields.io/badge/Database-H2_R2DBC-blue.svg)
+![Security](https://img.shields.io/badge/Security-Keycloak_OAuth2-red.svg)
 
-- Opérations CRUD complètes pour la gestion des utilisateurs.
-- API RESTful entièrement réactive.
-- Validation de l'unicité de l'email lors de la création d'un utilisateur.
-- Streaming de données avec gestion de la backpressure.
-- Base de données en mémoire H2 pour un démarrage et des tests faciles.
+## 📖 Overview
 
-## Technologies utilisées
+**crudreativeBackpressure** is a state-of-the-art implementations of a Reactive CRUD application. It leverages the full power of the **Spring Reactive Stack** to handle high concurrency with minimal resources. Unlike traditional blocking APIs, this project demonstrates how to build a fully non-blocking pipeline—from the controller down to the database.
 
-- **Java 17**
-- **Spring Boot**
-- **Spring WebFlux** : Framework web réactif.
-- **Spring Data R2DBC** : Pour l'accès réactif aux bases de données.
-- **R2DBC H2** : Driver réactif pour la base de données H2.
-- **H2 Database** : Base de données en mémoire.
-- **Gradle** : Outil de build.
+Key advanced features include **Backpressure Management** for handling large data streams securely and robust **OAuth2/OIDC Security** integration using Keycloak.
 
-## Prérequis
+## ✨ Key Features
 
-Avant de commencer, assurez-vous d'avoir installé les éléments suivants sur votre machine :
+- **⚡ Fully Reactive Stack**: End-to-end non-blocking I/O using Spring WebFlux and Netty.
+- **🌊 Backpressure Handling**: Smart data streaming that respects client consumption rates using `onBackpressureBuffer`.
+- **🛡️ Robust Security**: Secured via OAuth2 Resource Server (JWT) with Keycloak integration.
+- **💾 Reactive Database Access**: High-performance database interactions using Spring Data R2DBC and H2.
+- **✅ Data Validation**: Comprehensive uniqueness checks (e.g., Email Uniqueness validation on creation).
+- **🧪 Testing**: Includes `curl` scripts for easy API verification.
 
-- JDK 17 ou supérieur
-- Gradle
+## 🛠️ Technology Stack
 
-## Installation et exécution
+| Component | Technology | Description |
+|-----------|------------|-------------|
+| **Core** | Java 17 | Latest LTS features. |
+| **Framework** | Spring Boot & WebFlux | Reactive application framework. |
+| **Database** | H2 (InMemory) | Fast, embedded SQL database. |
+| **Persistence** | Spring Data R2DBC | Reactive Relational Database Connectivity. |
+| **Security** | Spring Security OAuth2 | Resource Server with JWT validation. |
+| **Identity** | Keycloak | OIDC/OAuth2 Provider (external dependency). |
+| **Build** | Gradle | Dependency management and build automation. |
 
-1.  **Clonez le dépôt :**
+## ⚙️ Architecture
 
-    ```bash
-    git clone <url-du-depot>
-    cd crudreativeBackpressure
-    ```
+The application follows a reactive layered architecture:
 
-2.  **Lancez l'application :**
+```mermaid
+graph LR
+    Client -->|HTTP/Stream| Security[Security Layer<br>(OAuth2/JWT)]
+    Security --> Controller[Reactive Controller]
+    Controller -->|Flux/Mono| Repository[R2DBC Repository]
+    Repository -->|Non-blocking SQL| DB[(H2 Database)]
+```
 
-    ```bash
-    ./gradlew bootRun
-    ```
+- **Controller**: Handles HTTP requests non-blockingly.
+- **Backpressure**: The `/users/stream` endpoint demonstrates `Buffer` strategies to prevent overwhelming the subscriber.
+- **Error Handling**: Custom exception handling for business logic (e.g., `EmailUniquenessException`).
 
-L'application sera disponible à l'adresse `http://localhost:8080`.
+## 🚀 Getting Started
 
-## Points d'accès de l'API
+### Prerequisites
 
-L'API expose les points d'accès suivants sous le chemin de base `/users`.
+- **JDK 17** or higher installed.
+- **H2 Database** (Embedded, no installation needed).
+- **Keycloak Server** (Optional for full security features, running on port `8180`).
+  - *Note: Without Keycloak, secured endpoints may return 401 Unauthorized.*
 
-| Méthode | Endpoint              | Description                                      |
-| ------- | --------------------- | ------------------------------------------------ |
-| `GET`   | `/`                   | Récupère la liste de tous les utilisateurs.      |
-| `GET`   | `/{id}`               | Récupère un utilisateur par son ID.              |
-| `POST`  | `/`                   | Crée un nouvel utilisateur.                      |
-| `PUT`   | `/`                   | Met à jour un utilisateur existant.              |
-| `DELETE`| `/{id}`               | Supprime un utilisateur par son ID.              |
-| `GET`   | `/stream`             | Streame tous les utilisateurs avec backpressure. |
+### Installation
 
-### Corps de la requête pour `POST` et `PUT`
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Juste120/crudreative_blackpressure.git
+   cd crudreativeBackpressure
+   ```
 
+2. **Build the project**
+   ```bash
+   ./gradlew clean build
+   ```
+
+3. **Run the application**
+   ```bash
+   ./gradlew bootRun
+   ```
+   The app will start on `http://localhost:8080`.
+
+## 🔐 Security Configuration
+
+The application is configured as an **OAuth2 Resource Server**. It expects a Keycloak instance running locally.
+
+**Key Settings (`application.properties`):**
+- **Issuer/JWK Set URI**: Points to `http://localhost:8180/auth/realms/BookStoreRealm`.
+- **Roles**:
+  - `ROLE_ADMIN`: Required for `POST /users` (Create).
+  - `ROLE_USER` / `ROLE_ADMIN`: Required for `GET /users/**` (Read).
+
+> **Tip**: You can disable security for testing by modifying `SecurityConfig.java` or setting up a local Keycloak container with the `BookStoreRealm`.
+
+## 🔌 API Endpoints
+
+Base URL: `/users`
+
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/` | Retrieve all users | `USER` or `ADMIN` |
+| `GET` | `/{id}` | Retrieve user by ID | `USER` or `ADMIN` |
+| `POST` | `/` | Create a new user | `ADMIN` |
+| `PUT` | `/` | Update an existing user | Authenticated |
+| `DELETE` | `/{id}` | Delete a user | Authenticated |
+| `GET` | `/stream` | **Stream users with Backpressure** | `USER` or `ADMIN` |
+
+### Sample JSON Body
 ```json
 {
-  "name": "John Doe",
-  "email": "john.doe@example.com"
+  "name": "Alex Tech",
+  "email": "alex.tech@example.com"
 }
 ```
 
-## Comment tester l'application
+## 🧪 Testing
 
-Un script shell `test-curl.sh` est fourni pour tester facilement les points d'accès de l'API. Assurez-vous que le script est exécutable :
+A convenient shell script is provided to test endpoints using `curl`.
 
-```bash
-chmod +x test-curl.sh
-```
+1. Make the script executable:
+   ```bash
+   chmod +x test-curl.sh
+   ```
+2. Run the test suite:
+   ```bash
+   ./test-curl.sh
+   ```
 
-Puis exécutez-le :
+## 🤝 Contributing
 
-```bash
-./test-curl.sh
-```
+Contributions are welcome! Please fork the repository and submit a Pull Request.
 
-Ce script effectuera une série de requêtes `curl` pour tester les différentes fonctionnalités de l'API.
+---
+*Created by PAKOU Komi Juste*
